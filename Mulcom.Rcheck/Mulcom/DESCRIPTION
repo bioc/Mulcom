@@ -1,0 +1,18 @@
+Package: Mulcom
+Type: Package
+Title: Calculates MulCom test
+Version: 0.99.3
+Date: 2010-07-08
+Author: Claudio Isella
+Maintainer: Claudio Isella <claudio.isella@ircc.it>
+Depends: R (>= 2.11.1), fields, Biobase
+Imports: graphics, grDevices, stats, methods
+Description: Identification of differentially expressed genes and false
+        discovery rate (FDR) calculation by Multiple Comparison test
+biocViews: Statistics, MultipleComparisons, Microarray,
+        DifferentialExpression, GeneExpression
+License: GPL-2
+LazyLoad: yes
+Packaged: 2010-04-07 11:45:04 UTC; cisella
+Built: R 2.12.0; x86_64-unknown-linux-gnu; 2010-09-30 09:54:06 UTC; unix
+Archs: Mulcom.so

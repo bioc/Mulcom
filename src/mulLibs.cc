@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include <cmath>
 #include <cstdlib>      
 #include <iostream>
@@ -19,7 +20,9 @@ using namespace std ;
 
 int ref ;
 vector <int> clusters ;
+vector <int> current_randomized_groups ;
 vector <double> buffer ;
+vector <double> buffer_2 ;
 set <int> cluster_name ;             
 multimap<int, double> cluster_to_data ;
 map <int, double> cluster_to_means ;
@@ -551,6 +554,482 @@ extern "C" {
                 }	
 	}
 	
-	// END OF LIBRARY
-}
 
+        // ===================================================
+        //
+        // Function Single_SimulationC
+        //
+        // ===================================================
+
+	// intended to be called as:
+	// out <- .C("Single_SimulationC", as.double(data), as.double(means), as.double(harmonic_means), as.double(SS),  as.double(sss2), as.double(mse), as.integer(n), as.integer(m), as.integer(groups), as.integer( ngroups ), as.integer(reference),PACKAGE = "Mulcom")
+
+	void Single_SimulationC ( double *data, double *means, double *harmonic_means, double *ss, double *sss2, double *mse, int *N , int *M, int *groups,  int *ngroups, int *reference ) {
+
+                cluster_to_means.clear() ;
+                cluster_to_data.clear() ;
+                clusters.clear() ;
+                cluster_name.clear() ;
+
+                ref = *reference ;
+                int index = 0 ;
+
+                for ( int i = 0 ; i < *M ; i++ ) {
+
+                        clusters.push_back( groups[i] ) ;
+                        cluster_name.insert( groups[i] ) ;
+
+                }
+
+		// *******************************************
+		// STEP 1: fast_mean
+		// *******************************************
+
+                // upload data from the original R structures
+
+                // loop over all the original lines with data 
+                double tmp = 0.0f ;
+                int current_cluster ;
+                int jump = *N ;
+
+                for ( int i = 0 ; i < *N ; i++ ) {
+
+                        // loop over all the samples ( groups )
+
+                        for ( int j = 0 ; j < *M ; j++ ) {
+
+                                current_cluster = clusters[j] ;
+                                tmp = data[ i + jump * j ] ; 
+
+                                cluster_to_data.insert( std::pair<int, double> ( current_cluster, tmp ) ) ;
+
+                        }
+
+                        // NOW PROCESS DATA
+
+                        pair<multimap<int, double>::iterator, multimap<int, double>::iterator> ppp;
+
+                        // loop over all the cluster names
+                        for ( set <int>::iterator it = cluster_name.begin() ; it != cluster_name.end() ; ++it ) {
+
+                                // select only data belonging to the same cluster
+                                ppp = cluster_to_data.equal_range( *it );
+
+                                // fill buffer vector
+                                buffer.clear() ;
+                                for ( multimap<int, double>::iterator it2 = ppp.first ; it2 != ppp.second ; ++it2 ) {
+
+                                        buffer.push_back( (*it2).second ) ;
+
+                                }
+
+                                // evaluate Mean
+                                cluster_to_means.insert(std::pair<int ,double>( *it , Mean ( buffer, buffer.size() ) ) ) ;
+
+                        }
+
+                        // loop over all the Means and evaluate differences with respect to Ref
+
+                        for( map<int, double>::iterator ii = cluster_to_means.begin(); ii != cluster_to_means.end() ; ++ii ) {
+
+                                if ( (*ii).first != ref ) {
+
+                                        means[index] = ( (*ii).second - cluster_to_means[ ref ] ) ;
+                                        index++ ;
+
+                                }
+                        }
+
+                        cluster_to_means.clear() ;
+                        cluster_to_data.clear() ; // end of a line of data
+
+                }
+
+	        // *******************************************
+                // STEP 2: fast_harmonic_sample_size
+                // *******************************************
+
+	        // this function compute harmonic means of the sample's size (between a certain sample i and the Reference sample)
+
+                cluster_name.clear() ;
+                cluster_to_size.clear() ;
+
+                index = 0 ;
+		int last_harmonic_means = 0 ;
+                for ( int i = 0 ; i < *M ; i++ ) {
+
+                        cluster_name.insert( groups[i] ) ;
+                        cluster_to_size.insert( std::pair<int, double> ( groups[i], 1.0f ) ) ;
+                }
+
+                // loop over all the cluster names
+                for ( set <int>::iterator it = cluster_name.begin() ; it != cluster_name.end() ; ++it ) {
+
+                        buffer.clear() ;
+
+                        if ( (*it) != ref ) {
+
+                                buffer.push_back( cluster_to_size.count( ref ) ) ; 
+
+                                // select only data belonging to the same cluster
+
+                                buffer.push_back( cluster_to_size.count( *it ) ) ;
+
+                                // compute harmonic mean
+                                harmonic_means[index] = Harmonic_Mean ( buffer, buffer.size() ) ;
+
+                                index++ ;
+                       }
+                }
+		last_harmonic_means = index ;
+
+		// *******************************************
+                // STEP 3: fast_SS
+                // *******************************************
+
+                cluster_to_SS.clear() ;
+                cluster_to_data.clear() ;
+                clusters.clear() ;
+                cluster_name.clear() ;
+
+                index = 0 ;
+
+                for ( int i = 0 ; i < *M ; i++ ) {
+
+                        clusters.push_back( groups[i] ) ;
+                        cluster_name.insert( groups[i] ) ;
+
+                }
+
+                // upload data from the original R structures
+
+                // loop over all the original lines with data
+                tmp = 0.0f ;
+                current_cluster ;
+                jump = *N ;
+
+                for ( int i = 0 ; i < *N ; i++ ) {
+
+                        // loop over all the samples ( groups )
+
+                        for ( int j = 0 ; j < *M ; j++ ) {
+
+                                current_cluster = clusters[j] ;
+                                tmp = data[ i + jump * j ] ;
+
+                                cluster_to_data.insert( std::pair<int, double> ( current_cluster, tmp ) ) ;
+
+                        }
+
+                        // NOW PROCESS DATA
+
+                        pair<multimap<int, double>::iterator, multimap<int, double>::iterator> ppp;
+
+                        // loop over all the cluster names
+                        for ( set <int>::iterator it = cluster_name.begin() ; it != cluster_name.end() ; ++it ) {
+
+                                // select only data belonging to the same cluster
+                                ppp = cluster_to_data.equal_range( *it );
+
+                                // fill buffer vector
+                                buffer.clear() ;
+                                for ( multimap<int, double>::iterator it2 = ppp.first ; it2 != ppp.second ; ++it2 ) {
+
+                                        buffer.push_back( (*it2).second ) ;
+                                }
+
+                                // evaluate SS
+                                cluster_to_SS.insert(std::pair<int ,double>( *it , SS ( buffer, buffer.size() ) ) ) ;
+
+                        }
+
+                        // loop over all the SS and store them
+                        for( map<int, double>::iterator ii = cluster_to_SS.begin(); ii != cluster_to_SS.end() ; ++ii ) {
+
+                                        ss[index] = (*ii).second ;
+                                        index++ ;
+                        }
+
+                        cluster_to_SS.clear() ;
+                        cluster_to_data.clear() ; // end of a line of data
+
+                }
+
+                // ********************************************************************
+                // STEP 4: last computations to evaluate mulcom@MSE_Corrected <- t(mse)
+                // ********************************************************************
+
+		int df = *M - *ngroups ; // this sholud be the equivalent of "df <- length(groups) - ngroups" in R
+	        double sum = 0 ;
+		int last_sss2 = 0 ;
+		index = 0 ;
+		jump = *ngroups ;
+
+		for ( int i = 0 ; i < *N ; i++ ) {
+			sum = 0 ;
+			for ( int j = 0 ; j < *ngroups ; j++ ) {
+                                sum += ss[ j + jump * i ] ;
+                        }
+			sss2[index] = sum ;
+			index++ ;
+		}
+		last_sss2 = index ;
+
+		// compute the equivalent of "mse <- sqrt((sss2 * 2 / df)%*%harmDF^-1)" in R
+		index = 0 ;
+
+		for ( int i = 0 ; i < last_sss2 ; i++ ) {
+			for ( int j = 0 ; j < last_harmonic_means ; j++ ) {
+				mse[index] = sqrt ( ( sss2[i] * 2 / df ) / harmonic_means[j] );
+				index++ ;
+			}
+		}
+	}	
+
+        // ===================================================
+        //
+        // Function Complete_SimulationC
+        //
+        // ===================================================
+
+	// intended to be called as:
+
+	// out <- .C("Complete_SimulationC", as.double(data), as.integer(index), as.double(means), as.double(mse), as.integer(n), as.integer(m), as.integer(np), 
+	// as.integer(ngroups), as.integer(reference),PACKAGE = "Mulcom")
+
+	void Complete_SimulationC ( double *data, int *index, double *means, double *mse, int *N , int *M, int *np, int* ngroups, int *reference ) {
+
+		ref = *reference ;
+
+                vector <double> harmonic_means ;
+		vector <double> ss ;
+		vector <double> sss2 ;
+
+                ofstream myfile_3;
+                myfile_3.open ("mse.txt", ios::app );
+
+		int means_local_index = 0 ;
+		for ( int simulation = 0 ; simulation < *np ; simulation++ ) {
+			
+			// ****************************************
+			// START single simulation run
+			// ****************************************
+
+			clusters.clear() ;
+                	cluster_to_means.clear() ;
+                	cluster_to_data.clear() ;
+                	cluster_name.clear() ;
+			cluster_to_size.clear() ;
+
+			for( int i = simulation * (*M) ; i < *M + ( simulation * (*M) ) ; i++ ){
+                
+                	        clusters.push_back( index[i] ) ;
+                        	cluster_name.insert( index[i] ) ;
+
+		
+			}
+			
+
+			// *******************************************
+			// STEP 1: compute means
+			// *******************************************
+
+                	// upload data from the original R structures
+
+                	// loop over all the original lines with data 
+                	double tmp = 0.0f ;
+                	int current_cluster ;
+                	int jump = *N ;
+			means_local_index = 0 ;
+
+                	for ( int i = 0 ; i < *N ; i++ ) {
+
+                        	// loop over all the samples ( groups )
+
+                        	for ( int j = 0 ; j < *M ; j++ ) {
+
+                                	current_cluster = clusters[j] ;
+                                	tmp = data[ i + jump * j ] ; 
+
+                                	cluster_to_data.insert( std::pair<int, double> ( current_cluster, tmp ) ) ;
+
+                        	}
+
+                        	// NOW PROCESS DATA
+
+                        	pair<multimap<int, double>::iterator, multimap<int, double>::iterator> ppp;
+
+                        	// loop over all the cluster names
+                        	for ( set <int>::iterator it = cluster_name.begin() ; it != cluster_name.end() ; ++it ) {
+
+                                	// select only data belonging to the same cluster
+                                	ppp = cluster_to_data.equal_range( *it );
+
+                                	// fill buffer vector
+                                	buffer.clear() ;
+                                	for ( multimap<int, double>::iterator it2 = ppp.first ; it2 != ppp.second ; ++it2 ) {
+
+                                        	buffer.push_back( (*it2).second ) ;
+
+                                	}
+
+                                	// evaluate Mean
+                                	cluster_to_means.insert(std::pair<int ,double>( *it , Mean ( buffer, buffer.size() ) ) ) ;
+
+                        	}
+
+                        	// loop over all the Means and evaluate differences with respect to Ref
+
+                        	for( map<int, double>::iterator ii = cluster_to_means.begin(); ii != cluster_to_means.end() ; ++ii ) {
+
+                                	if ( (*ii).first != ref ) {
+
+                                       		means[means_local_index + ( ( (*N) * (*ngroups - 1) ) * simulation ) ] = ( (*ii).second - cluster_to_means[ ref ] ) ;
+                                        	means_local_index++ ;
+
+                                	}
+                        	}
+
+                        	cluster_to_means.clear() ;
+                        	cluster_to_data.clear() ; // end of a line of data
+
+                	}
+
+	                // *********************************************
+        	        // STEP 2: compute fast_harmonic_sample_size
+                	// *********************************************
+
+	                // this function compute harmonic means of the sample's size (between a certain sample i and the Reference sample)
+
+        	        cluster_name.clear() ;
+	                cluster_to_size.clear() ;
+			harmonic_means.clear() ;
+
+        	        for ( int i = simulation * (*M) ; i < *M + ( simulation * (*M) ) ; i++ ) {
+
+                	        cluster_name.insert( index[i] ) ;
+                        	cluster_to_size.insert( std::pair<int, double> ( index[i], 1.0f ) ) ;
+                	}
+
+	                // loop over all the cluster names
+        	        for ( set <int>::iterator it = cluster_name.begin() ; it != cluster_name.end() ; ++it ) {
+
+                	        buffer.clear() ;
+
+                        	if ( (*it) != ref ) {
+
+                                	buffer.push_back( cluster_to_size.count( ref ) ) ; 
+
+	                                // select only data belonging to the same cluster
+
+        	                        buffer.push_back( cluster_to_size.count( *it ) ) ;
+
+                	                // compute harmonic mean
+                        	        harmonic_means.push_back( Harmonic_Mean ( buffer, buffer.size() ) ) ;
+                       		}
+                	}
+
+	                // *******************************************
+        	        // STEP 3: compute fast_SS
+                	// *******************************************
+
+                	clusters.clear() ;
+	                cluster_name.clear() ;
+                        cluster_to_SS.clear() ;
+                        cluster_to_data.clear() ;
+
+			ss.clear() ;
+
+                	for ( int i = simulation * (*M) ; i < *M + ( simulation * (*M) ) ; i++ ) {
+
+	                        clusters.push_back( index[i] ) ;
+        	                cluster_name.insert( index[i] ) ;
+
+                	}
+
+	                // upload data from the original R structures
+
+	                // loop over all the original lines with data
+        	        tmp = 0.0f ;
+	                jump = *N ;
+
+        	        for ( int i = 0 ; i < *N ; i++ ) {
+
+                	        // loop over all the samples ( groups )
+
+                        	for ( int j = 0 ; j < *M ; j++ ) {
+
+                                	current_cluster = clusters[j] ;
+	                                tmp = data[ i + jump * j ] ;
+
+        	                        cluster_to_data.insert( std::pair<int, double> ( current_cluster, tmp ) ) ;
+
+                	        }
+
+                        	// NOW PROCESS DATA
+
+	                        pair<multimap<int, double>::iterator, multimap<int, double>::iterator> ppp;
+
+        	                // loop over all the cluster names
+                	        for ( set <int>::iterator it = cluster_name.begin() ; it != cluster_name.end() ; ++it ) {
+
+                        	        // select only data belonging to the same cluster
+                                	ppp = cluster_to_data.equal_range( *it );
+
+	                                // fill buffer vector
+        	                        buffer.clear() ;
+                	                for ( multimap<int, double>::iterator it2 = ppp.first ; it2 != ppp.second ; ++it2 ) {
+
+                        	                buffer.push_back( (*it2).second ) ;
+                                	}
+
+	                                // evaluate SS
+        	                        cluster_to_SS.insert(std::pair<int ,double>( *it , SS ( buffer, buffer.size() ) ) ) ;
+
+                	        }
+
+                        	// loop over all the SS and store them
+	                        for( map<int, double>::iterator ii = cluster_to_SS.begin(); ii != cluster_to_SS.end() ; ++ii ) {
+
+						ss.push_back ( (*ii).second ) ;
+                        	}
+
+	                        cluster_to_SS.clear() ;
+        	                cluster_to_data.clear() ; // end of a line of data
+
+                	}
+
+	                // ********************************************************************
+        	        // STEP 4: last computations to evaluate mulcom@MSE_Corrected <- t(mse)
+                	// ********************************************************************
+
+	                int df = *M - *ngroups ; // this sholud be the equivalent of "df <- length(groups) - ngroups" in R
+        	        double sum = 0 ;
+        	        jump = *ngroups ;
+			int mse_local_index = 0 ;
+
+			sss2.clear() ;
+        	        for ( int i = 0 ; i < *N ; i++ ) {
+                	        sum = 0 ;
+                        	for ( int j = 0 ; j < *ngroups ; j++ ) {
+                                	sum += ss[ j + jump * i ] ;
+        	                }
+                	        sss2.push_back( sum ) ;
+	                }
+
+                	// compute the equivalent of "mse <- sqrt((sss2 * 2 / df)%*%harmDF^-1)" in R
+
+                	for ( int i = 0 ; i < sss2.size() ; i++ ) {
+                        	for ( int j = 0 ; j < harmonic_means.size() ; j++ ) {
+
+					mse[mse_local_index + ( ( (*N) * (*ngroups - 1) ) * simulation )] = sqrt ( ( sss2[i] * 2 / df ) / harmonic_means[j] );
+                	                mse_local_index++ ;
+                        	}
+	                }
+
+		}
+	}
+
+	// END OF THE LIBRARY
+
+}

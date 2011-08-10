@@ -57,7 +57,7 @@ mulScores <- function(eset, index){
             out <- .C("Single_SimulationC", as.double(data), as.double(means), as.double(harmonic_means), as.double(SS),  as.double(sss2), as.double(mse), as.integer(n), as.integer(m), as.integer(groups), as.integer( ngroups ), as.integer(reference),PACKAGE = "Mulcom")
 
             mulcom@FC <- t(data.frame(matrix(out[[2]], ncol=(ngroups-1), byrow=TRUE), row.names=rownames(eset)))
-            mulcom@HM <- data.frame(matrix(out[[3]], ncol=ngroups-1,byrow=TRUE))
+            mulcom@HM <- matrix(out[[3]], ncol=ngroups-1,byrow=TRUE)
 #            sumsqDF <- data.frame(matrix(out[[4]], ncol=ngroups,byrow=TRUE), row.names=rownames(eset))
 #            sss2 <- data.frame(matrix(out[[5]], ncol=1,byrow=TRUE), row.names=rownames(eset))
             mse <- data.frame(matrix(out[[6]], ncol=ngroups-1,byrow=TRUE), row.names=rownames(eset))

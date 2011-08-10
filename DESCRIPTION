@@ -1,9 +1,7 @@
 Package: Mulcom
 Type: Package
 Title: Calculates Mulcom test
-Date: 2011-17-06
-Title: Calculates Mulcom test
-Version: 1.2.3
+Version: 1.2.4
 Date: 2011-17-06
 Author: Claudio Isella
 Maintainer: Claudio Isella <claudio.isella@ircc.it>
@@ -13,4 +11,4 @@ Description: Identification of differentially expressed genes and false discover
 biocViews: Statistics, MultipleComparisons, Microarray, DifferentialExpression, GeneExpression
 License: GPL-2
 LazyLoad: yes
-Packaged: 2011-07-31 18:26:54 UTC; cisella
+Packaged: 2011-08-10 16:48:17 UTC; cisella

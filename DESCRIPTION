@@ -1,8 +1,8 @@
 Package: Mulcom
 Type: Package
 Title: Calculates Mulcom test
-Version: 1.2.4
-Date: 2011-17-06
+Version: 1.2.5
+Date: 2011-10-08
 Author: Claudio Isella
 Maintainer: Claudio Isella <claudio.isella@ircc.it>
 Depends: R (>= 2.9.0), fields, Biobase

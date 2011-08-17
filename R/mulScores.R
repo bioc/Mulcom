@@ -24,6 +24,8 @@ mulScores <- function(eset, index){
 
          mulcom@FC <- t(data.frame(matrix(out[[2]], ncol=(ngroups-1), byrow=TRUE), row.names=featureNames(eset)))
          mulcom@HM <- matrix(out[[3]], ncol=ngroups-1,byrow=TRUE)
+#         sumsqDF <- data.frame(matrix(out[[4]], ncol=ngroups,byrow=TRUE), row.names=featureNames(eset))
+#         sss2 <- data.frame(matrix(out[[5]], ncol=1,byrow=TRUE), row.names=featureNames(eset))
          mse <- data.frame(matrix(out[[6]], ncol=ngroups-1,byrow=TRUE), row.names=featureNames(eset))
 
          mulcom@MSE_Corrected <- t(mse)
@@ -56,6 +58,8 @@ mulScores <- function(eset, index){
 
             mulcom@FC <- t(data.frame(matrix(out[[2]], ncol=(ngroups-1), byrow=TRUE), row.names=rownames(eset)))
             mulcom@HM <- matrix(out[[3]], ncol=ngroups-1,byrow=TRUE)
+#            sumsqDF <- data.frame(matrix(out[[4]], ncol=ngroups,byrow=TRUE), row.names=rownames(eset))
+#            sss2 <- data.frame(matrix(out[[5]], ncol=1,byrow=TRUE), row.names=rownames(eset))
             mse <- data.frame(matrix(out[[6]], ncol=ngroups-1,byrow=TRUE), row.names=rownames(eset))
 
             mulcom@MSE_Corrected <- t(mse)

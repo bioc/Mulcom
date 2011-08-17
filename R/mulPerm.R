@@ -1,5 +1,6 @@
 mulPerm <- function(eset, index, np, seed, segm = "F"){
    if (class(eset) == "ExpressionSet" & is.vector(index) & is.numeric(np) & is.numeric(seed) | class(eset) == "matrix" | class(eset) == "data.frame") {
+#      if(class(eset) == "ExpressionSet"){
           mul <- new("MULCOM_P")
           multest <- mulScores(eset, index)
           mul <- new("MULCOM_P")
@@ -49,6 +50,9 @@ mulPerm <- function(eset, index, np, seed, segm = "F"){
              dim(mul@MSE_Correctedp) <- c(c(ngroups -1),dim(eset)[1],np)
              return(mul)
           }
+#      }else{
+#         print("hello")
+#      }
    }else{
 
       stop("error in input files", call. = FALSE)

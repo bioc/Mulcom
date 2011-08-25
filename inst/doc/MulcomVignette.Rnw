@@ -4,7 +4,7 @@
 %\VignettePackage{Mulcom}
 \documentclass[a4paper]{article}
 
-\usepackage{amsmath,amssymb,pstricks}
+\usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{Sweave}
 %\setlength{\parindent}{0cm} \setlength{\parskip}{12pt}
@@ -266,7 +266,10 @@ affyMulcB4Probes <- mulDiff(Affy, permutation, b4Opt[2], b4Opt[1], 4)
 mulcomGeneList <- unique(c(affyMulc1Probes, affyMulc6Probes, affyMulcB4Probes))
 @
 The analysis yielded to 1555 significant genes; we performed the same analysis on Illumina dataset: with 763 significant genes 
-User can take advantage of the function mulInt to evalute the intersection of different lists of genes.
+User can take advantage of the function mulInt to evalute the intersection of different lists of genes as it follows:
+<<mulInt>>=
+intersection <- mulInt(affyMulc1Probes,affyMulc6Probes)
+@
 
 
 <<permutation and optimization illumina, echo=F, results=hide>>=

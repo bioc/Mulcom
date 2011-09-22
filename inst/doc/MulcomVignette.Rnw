@@ -4,7 +4,7 @@
 %\VignettePackage{Mulcom}
 \documentclass[a4paper]{article}
 
-\usepackage{amsmath,amssymb,pstricks}
+\usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{Sweave}
 %\setlength{\parindent}{0cm} \setlength{\parskip}{12pt}

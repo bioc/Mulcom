@@ -18,7 +18,7 @@
 
 using namespace std ;
 
-int ref ;
+int reff ;
 vector <int> clusters ;
 vector <int> current_randomized_groups ;
 vector <double> buffer ;
@@ -113,9 +113,9 @@ extern "C" {
 	// ===================================================
 
 	// intended to be called as:
-	// .C("fast_mean", as.double( data ), as.double( means ) , as.integer( n ), as.integer( m ), as.integer( groups ) , as.integer ( reference ) )
+	// .C("fast_mean", as.double( data ), as.double( means ) , as.integer( n ), as.integer( m ), as.integer( groups ) , as.integer ( refference ) )
 
-	void fast_mean ( double *data, double *means, int *N , int *M, int *groups, int *reference ) {
+	void fast_mean ( double *data, double *means, int *N , int *M, int *groups, int *refference ) {
 	
 		// store cluster positions and names
 		// remember that: 
@@ -127,7 +127,7 @@ extern "C" {
 		clusters.clear() ;
 		cluster_name.clear() ;
 
-		ref = *reference ;
+		reff = *refference ;
 		int index = 0 ;
         
 		for ( int i = 0 ; i < *M ; i++ ) {
@@ -184,9 +184,9 @@ extern "C" {
                                         
 			for( map<int, double>::iterator ii = cluster_to_means.begin(); ii != cluster_to_means.end() ; ++ii ) {
 
-				if ( (*ii).first != ref ) {
+				if ( (*ii).first != reff ) {
 
-					means[index] = ( (*ii).second - cluster_to_means[ ref ] ) ;
+					means[index] = ( (*ii).second - cluster_to_means[ reff ] ) ;
 					index++ ;
 
 				}
@@ -378,11 +378,11 @@ extern "C" {
         // ===================================================
 
         // intended to be called as:
-        // .C("fast_harmonic_sample_size", as.double( harmonic_means ) , as.integer( m ), as.integer( groups ) , as.integer ( reference ) )
+        // .C("fast_harmonic_sample_size", as.double( harmonic_means ) , as.integer( m ), as.integer( groups ) , as.integer ( refference ) )
 
 	// this function compute harmonic means of the sample's size (between a certain sample i and the Reference sample)
 
-	void fast_harmonic_sample_size ( double *harmonic_means, int *M , int *groups, int *reference ) {
+	void fast_harmonic_sample_size ( double *harmonic_means, int *M , int *groups, int *refference ) {
 
                 // store cluster positions and names
                 // remember that: 
@@ -404,9 +404,9 @@ extern "C" {
 
 			buffer.clear() ;		
 
-			if ( (*it) != ref ) {
+			if ( (*it) != reff ) {
 
-				buffer.push_back( cluster_to_size.count( ref ) ) ; 
+				buffer.push_back( cluster_to_size.count( reff ) ) ; 
 
         	        	// select only data belonging to the same cluster
 
@@ -562,16 +562,16 @@ extern "C" {
         // ===================================================
 
 	// intended to be called as:
-	// out <- .C("Single_SimulationC", as.double(data), as.double(means), as.double(harmonic_means), as.double(SS),  as.double(sss2), as.double(mse), as.integer(n), as.integer(m), as.integer(groups), as.integer( ngroups ), as.integer(reference),PACKAGE = "Mulcom")
+	// out <- .C("Single_SimulationC", as.double(data), as.double(means), as.double(harmonic_means), as.double(SS),  as.double(sss2), as.double(mse), as.integer(n), as.integer(m), as.integer(groups), as.integer( ngroups ), as.integer(refference),PACKAGE = "Mulcom")
 
-	void Single_SimulationC ( double *data, double *means, double *harmonic_means, double *ss, double *sss2, double *mse, int *N , int *M, int *groups,  int *ngroups, int *reference ) {
+	void Single_SimulationC ( double *data, double *means, double *harmonic_means, double *ss, double *sss2, double *mse, int *N , int *M, int *groups,  int *ngroups, int *refference ) {
 
                 cluster_to_means.clear() ;
                 cluster_to_data.clear() ;
                 clusters.clear() ;
                 cluster_name.clear() ;
 
-                ref = *reference ;
+                reff = *refference ;
                 int index = 0 ;
 
                 for ( int i = 0 ; i < *M ; i++ ) {
@@ -632,9 +632,9 @@ extern "C" {
 
                         for( map<int, double>::iterator ii = cluster_to_means.begin(); ii != cluster_to_means.end() ; ++ii ) {
 
-                                if ( (*ii).first != ref ) {
+                                if ( (*ii).first != reff ) {
 
-                                        means[index] = ( (*ii).second - cluster_to_means[ ref ] ) ;
+                                        means[index] = ( (*ii).second - cluster_to_means[ reff ] ) ;
                                         index++ ;
 
                                 }
@@ -667,9 +667,9 @@ extern "C" {
 
                         buffer.clear() ;
 
-                        if ( (*it) != ref ) {
+                        if ( (*it) != reff ) {
 
-                                buffer.push_back( cluster_to_size.count( ref ) ) ; 
+                                buffer.push_back( cluster_to_size.count( reff ) ) ; 
 
                                 // select only data belonging to the same cluster
 
@@ -795,11 +795,11 @@ extern "C" {
 	// intended to be called as:
 
 	// out <- .C("Complete_SimulationC", as.double(data), as.integer(index), as.double(means), as.double(mse), as.integer(n), as.integer(m), as.integer(np), 
-	// as.integer(ngroups), as.integer(reference),PACKAGE = "Mulcom")
+	// as.integer(ngroups), as.integer(refference),PACKAGE = "Mulcom")
 
-	void Complete_SimulationC ( double *data, int *index, double *means, double *mse, int *N , int *M, int *np, int* ngroups, int *reference ) {
+	void Complete_SimulationC ( double *data, int *index, double *means, double *mse, int *N , int *M, int *np, int* ngroups, int *refference ) {
 
-		ref = *reference ;
+		reff = *refference ;
 
                 vector <double> harmonic_means ;
 		vector <double> ss ;
@@ -882,9 +882,9 @@ extern "C" {
 
                         	for( map<int, double>::iterator ii = cluster_to_means.begin(); ii != cluster_to_means.end() ; ++ii ) {
 
-                                	if ( (*ii).first != ref ) {
+                                	if ( (*ii).first != reff ) {
 
-                                       		means[means_local_index + ( ( (*N) * (*ngroups - 1) ) * simulation ) ] = ( (*ii).second - cluster_to_means[ ref ] ) ;
+                                       		means[means_local_index + ( ( (*N) * (*ngroups - 1) ) * simulation ) ] = ( (*ii).second - cluster_to_means[ reff ] ) ;
                                         	means_local_index++ ;
 
                                 	}
@@ -916,9 +916,9 @@ extern "C" {
 
                 	        buffer.clear() ;
 
-                        	if ( (*it) != ref ) {
+                        	if ( (*it) != reff ) {
 
-                                	buffer.push_back( cluster_to_size.count( ref ) ) ; 
+                                	buffer.push_back( cluster_to_size.count( reff ) ) ; 
 
 	                                // select only data belonging to the same cluster
 

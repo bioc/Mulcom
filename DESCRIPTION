@@ -1,7 +1,7 @@
 Package: Mulcom
 Type: Package
 Title: Calculates Mulcom test
-Version: 1.16.0
+Version: 1.17.0
 Date: 2011-10-08
 Author: Claudio Isella
 Maintainer: Claudio Isella <claudio.isella@ircc.it>

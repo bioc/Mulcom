@@ -6,7 +6,12 @@
 \title{MulCom Mean Square Error}
 
 \description{
+<<<<<<< HEAD
   Computes Mean Square Error for all the experimental points in the datasets in respect to control. should not be called directly
+=======
+  Computes Mean Square Error for all the experimental points in the datasets in respect to control
+  Should not be called directly
+>>>>>>> upstream/master
 }
 \usage{
 mulMSE(vector, index, tmp = vector())

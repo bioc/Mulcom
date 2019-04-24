@@ -1,5 +1,9 @@
 mulOpt <-
 function (Mulcom_P, vm, vt){
+<<<<<<< HEAD
+=======
+    library(fields)
+>>>>>>> upstream/master
     if(class(Mulcom_P) == "MULCOM_P" & is.vector(vm) & is.vector(vt)){
     tmp_sg <- array(0, c(nrow = length(vt), ncol = length(vm),
         dim(Mulcom_P@FC)[1]))

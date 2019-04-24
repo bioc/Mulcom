@@ -7,9 +7,12 @@ importFrom(graphics, axis, box, mtext, par)
 importFrom(grDevices, topo.colors)
 importFrom(methods, new)
 importFrom(stats, median, quantile)
+<<<<<<< HEAD
 importFrom(graphics, image)
 importFrom(fields, image.plot)
 
+=======
+>>>>>>> upstream/master
 
 
 export(mulCalc, mulDiff, mulFSG, mulOptPars, mulOptPlot, mulOpt,  mulPerm, mulScores, mulCAND, mulDELTA, mulParOpt, mulInt, mulIndex)

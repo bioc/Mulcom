@@ -4,12 +4,7 @@
 \title{MulCom optimization}
 
 \description{
-<<<<<<< HEAD
   The function systematically performs the calculation of significant genes and corresponding FDR for all the combination of given list of m and t values.
-=======
-  The function systematically performs the calculation of significant genes and corresponding FDR
-  for all the combination of given list of m and t values.
->>>>>>> upstream/master
 }
 \usage{
 mulOpt(Mulcom_P, vm, vt) 
@@ -20,12 +15,7 @@ mulOpt(Mulcom_P, vm, vt)
   \item{vt}{a vector of t values to test}
 }
 \details{
-<<<<<<< HEAD
   \code{mulOpt} The function systematically performs the calculation of significant genes and corresponding FDR for all the combination of given list of m and t values.
-=======
-  \code{mulOpt} The function systematically performs the calculation of significant genes and corresponding FDR
-  for all the combination of given list of m and t values.
->>>>>>> upstream/master
 }
 
 \examples{

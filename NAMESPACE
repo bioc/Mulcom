@@ -1,5 +1,4 @@
 useDynLib(Mulcom)
-
 importClassesFrom(Biobase, ExpressionSet)
 importMethodsFrom(Biobase, exprs, featureNames, pData, varLabels)
 importClassesFrom(methods, array, matrix)
@@ -7,8 +6,8 @@ importFrom(graphics, axis, box, mtext, par)
 importFrom(grDevices, topo.colors)
 importFrom(methods, new)
 importFrom(stats, median, quantile)
-
-
+importFrom(fields, image.plot)
+importFrom(graphics, image)
 export(mulCalc, mulDiff, mulFSG, mulOptPars, mulOptPlot, mulOpt,  mulPerm, mulScores, mulCAND, mulDELTA, mulParOpt, mulInt, mulIndex)
 exportClasses(MULCOM, MULCOM_P)
 

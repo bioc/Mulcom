@@ -5,8 +5,8 @@ Version: 1.35.0
 Date: 2011-10-08
 Author: Claudio Isella
 Maintainer: Claudio Isella <claudio.isella@ircc.it>
-Depends: R (>= 2.10), fields, Biobase
-Imports: graphics, grDevices, stats, methods
+Depends: R (>= 2.10), Biobase
+Imports: graphics, grDevices, stats, methods, fields
 Description: Identification of differentially expressed genes and false discovery rate (FDR) calculation by Multiple Comparison test.
 License: GPL-2
 LazyLoad: yes

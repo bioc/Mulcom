@@ -1,0 +1,27 @@
+title: "MulCom: a Multiple Comparison statistical test for microarray"
+author: "Claudio Isella, Tommaso Renzulli, Davide Cora` and Enzo Medico"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+Many microarray experiments compare a common control group
+with several "test" groups, like in the case , for example of a time-course experiments
+where time zero serves as a common reference point. The MulCom
+package described here implements the Dunnett's t-test, which has been
+specifically developed to handle multiple comparisons against a common
+reference, in a version tailored for genomic data analysis that we named
+MulCom (Multiple Comparisons) test.
+The implementation includes two test parameters, namely the t value and
+an optional minimal fold-change value, m, with automated,
+permutation-based estimation of False Discovery Rate (FDR) for parameter
+combinations of choice.
+
+The package permits automated optimization of the test parameters to obtain the
+maximum number of significant genes at a given FDR value. In this vignette we
+present the rationale, implementation and usage of the MulCom package,
+plus a practical application on a time-course microarray experiment.
+  Mulcom package version: `r packageVersion("Mulcom")`
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+
